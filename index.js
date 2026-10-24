@@ -52,7 +52,6 @@ function checkAndValidate(memberId) {
     const data = memberTracker.get(memberId);
     if (!data || data.isValid) return;
 
-    // Syarat valid: Minimal 3 chat DAN pernah masuk voice channel
     if (data.chatCount >= 3 && data.joinedVoice) {
         data.isValid = true;
         const stats = getInviterStats(data.inviterId);
@@ -64,7 +63,6 @@ function checkAndValidate(memberId) {
 client.once('ready', async () => {
     console.log(`🤖 Bot Berhasil Login sebagai ${client.user.tag}`);
     
-    // Cache semua invite link yang ada di server saat bot nyala
     for (const guild of client.guilds.cache.values()) {
         try {
             const guildInvites = await guild.invites.fetch();
@@ -75,7 +73,6 @@ client.once('ready', async () => {
     }
 });
 
-// --- 1. DETEKSI ORANG MASUK (GUILD MEMBER ADD) ---
 client.on('guildMemberAdd', async (member) => {
     const cachedInvites = invitesCache.get(member.guild.id);
     let inviterId = 'UNKNOWN';
@@ -105,7 +102,6 @@ client.on('guildMemberAdd', async (member) => {
     console.log(`[JOIN] ${member.user.tag} masuk via invite dari ${inviterId}`);
 });
 
-// --- 2. DETEKSI ORANG KELUAR (GUILD MEMBER REMOVE) ---
 client.on('guildMemberRemove', (member) => {
     const data = memberTracker.get(member.id);
     if (data && data.inviterId !== 'UNKNOWN') {
@@ -121,7 +117,6 @@ client.on('guildMemberRemove', (member) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
 
-    // DEBUG LOG: Supaya kelihatan di Render kalau bot mendeteksi pesan masuk
     console.log(`[DEBUG] Pesan dari ${message.author.tag}: ${message.content}`);
 
     const data = memberTracker.get(message.author.id);
@@ -136,7 +131,6 @@ client.on('messageCreate', async (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
-    // Command: Bikin Link Invite Personal Otomatis
     if (command === 'buatlink' || command === 'invite' || command === 'mylink') {
         try {
             const invite = await message.channel.createInvite({
@@ -157,7 +151,6 @@ client.on('messageCreate', async (message) => {
         }
     }
 
-    // Command: Cek poin sendiri
     if (command === 'myinvite') {
         const stats = getInviterStats(message.author.id);
         const validCount = stats.valid.size;
@@ -172,7 +165,6 @@ client.on('messageCreate', async (message) => {
         );
     }
 
-    // Command: Leaderboard top 10
     if (command === 'leaderboard' || command === 'topinvite') {
         const leaderboardData = [];
 
@@ -198,7 +190,6 @@ client.on('messageCreate', async (message) => {
         return message.reply(lbMessage);
     }
 
-    // Command: Audit member (Khusus Admin/Event Organizer)
     if (command === 'audit') {
         if (!message.member.permissions.has('ManageGuild')) {
             return message.reply('❌ Kamu tidak memiliki izin untuk menggunakan perintah audit ini!');
@@ -233,7 +224,6 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-// --- 3. DETEKSI AKTIVITAS VOICE CHANNEL ---
 client.on('voiceStateUpdate', (oldState, newState) => {
     const memberId = newState.member.id;
     const data = memberTracker.get(memberId);
