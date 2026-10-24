@@ -114,11 +114,13 @@ client.on('guildMemberRemove', (member) => {
     }
 });
 
+// --- EVENT PESAN MASUK & COMMAND HANDLER ---
 client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
 
     console.log(`[DEBUG] Pesan dari ${message.author.tag}: ${message.content}`);
 
+    // Update statistik chat member untuk syarat validasi
     const data = memberTracker.get(message.author.id);
     if (data) {
         data.chatCount += 1;
@@ -131,6 +133,7 @@ client.on('messageCreate', async (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
+    // 1. Command: Bikin Link Invite Personal
     if (command === 'buatlink' || command === 'invite' || command === 'mylink') {
         try {
             const invite = await message.channel.createInvite({
@@ -151,6 +154,7 @@ client.on('messageCreate', async (message) => {
         }
     }
 
+    // 2. Command: Cek poin sendiri
     if (command === 'myinvite') {
         const stats = getInviterStats(message.author.id);
         const validCount = stats.valid.size;
@@ -165,6 +169,7 @@ client.on('messageCreate', async (message) => {
         );
     }
 
+    // 3. Command: Leaderboard top 10
     if (command === 'leaderboard' || command === 'topinvite') {
         const leaderboardData = [];
 
@@ -190,6 +195,7 @@ client.on('messageCreate', async (message) => {
         return message.reply(lbMessage);
     }
 
+    // 4. Command: Audit member (Khusus Admin/Event Organizer)
     if (command === 'audit') {
         if (!message.member.permissions.has('ManageGuild')) {
             return message.reply('❌ Kamu tidak memiliki izin untuk menggunakan perintah audit ini!');
@@ -247,10 +253,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-console.log('🔄 Sedang mencoba menghubungkan bot ke Discord...');
-
 client.login(process.env.DISCORD_TOKEN).then(() => {
-    console.log('✅ LOGIN BERHASIL DISETUJUI DISCORD!');
+    console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD!`);
 }).catch(err => {
     console.error('❌ ERROR LOGIN:', err);
 });
