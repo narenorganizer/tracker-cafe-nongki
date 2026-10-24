@@ -247,6 +247,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN).catch(err => {
-    console.error('❌GAGAL LOGIN KE DISCORD:', err);
+console.log('🔄 Sedang mencoba menghubungkan bot ke Discord...');
+
+client.login(process.env.DISCORD_TOKEN).then(() => {
+    console.log('✅ LOGIN BERHASIL DISETUJUI DISCORD!');
+}).catch(err => {
+    console.error('❌ ERROR LOGIN:', err);
 });
