@@ -121,7 +121,7 @@ client.on('guildMemberRemove', (member) => {
     }
 });
 
-client.on('messageCreate', (message) => {
+client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
 
     // Hitung aktivitas chat member untuk verifikasi
@@ -136,6 +136,28 @@ client.on('messageCreate', (message) => {
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
+
+    // Command: Bikin Link Invite Personal Otomatis
+    if (command === 'buatlink' || command === 'invite' || command === 'mylink') {
+        try {
+            // Membuat invite baru di channel tempat command diketik, tanpa batas waktu (maxAge: 0) dan tanpa batas penggunaan (maxUses: 0)
+            const invite = await message.channel.createInvite({
+                maxAge: 0,
+                maxUses: 0,
+                unique: true,
+                reason: `Link invite personal untuk ${message.author.tag}`
+            });
+
+            return message.reply(
+                `🔗 **Link Invite Personal Kamu Berhasil Dibuat!**\n` +
+                `Bagikan link ini ke teman-teman kamu:\n` +
+                `https://discord.gg/${invite.code}`
+            );
+        } catch (err) {
+            console.error('Gagal membuat invite:', err);
+            return message.reply('❌ Gagal membuat link invite. Pastikan bot memiliki izin yang cukup di server!');
+        }
+    }
 
     // Command: Cek poin sendiri
     if (command === 'myinvite') {
@@ -166,7 +188,7 @@ client.on('messageCreate', (message) => {
         const top10 = leaderboardData.slice(0, 10);
 
         if (top10.length === 0) {
-            return message.reply('🏆 Leaderboard masih kosong! Ajak teman-teman kamu sekarang!');
+            return message.reply('🏆 Leaderboard masih kosong! Ketik `!buatlink` untuk mulai mengundang!');
         }
 
         let lbMessage = '🏆 **TOP 10 LEADERBOARD INVITE CONTEST** 🏆\n\n';
