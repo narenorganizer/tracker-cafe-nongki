@@ -82,20 +82,17 @@ client.on('guildMemberAdd', async (member) => {
 
     try {
         const newInvites = await member.guild.invites.fetch();
-        // Cari tahu link invite mana yang jumlah penggunaannya bertambah
         const usedInvite = newInvites.find(inv => cachedInvites && cachedInvites.get(inv.code) < inv.uses);
 
         if (usedInvite && usedInvite.inviter) {
             inviterId = usedInvite.inviter.id;
         }
         
-        // Perbarui cache invite dengan data terbaru
         invitesCache.set(member.guild.id, new Collection(newInvites.map(inv => [inv.code, inv.uses])));
     } catch (err) {
         console.error('Gagal memproses invite member baru:', err);
     }
 
-    // Catat data member baru ke tracker
     memberTracker.set(member.id, {
         inviterId: inviterId,
         chatCount: 0,
@@ -124,7 +121,9 @@ client.on('guildMemberRemove', (member) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
 
-    // Hitung aktivitas chat member untuk verifikasi
+    // DEBUG LOG: Supaya kelihatan di Render kalau bot mendeteksi pesan masuk
+    console.log(`[DEBUG] Pesan dari ${message.author.tag}: ${message.content}`);
+
     const data = memberTracker.get(message.author.id);
     if (data) {
         data.chatCount += 1;
@@ -140,7 +139,6 @@ client.on('messageCreate', async (message) => {
     // Command: Bikin Link Invite Personal Otomatis
     if (command === 'buatlink' || command === 'invite' || command === 'mylink') {
         try {
-            // Membuat invite baru di channel tempat command diketik, tanpa batas waktu (maxAge: 0) dan tanpa batas penggunaan (maxUses: 0)
             const invite = await message.channel.createInvite({
                 maxAge: 0,
                 maxUses: 0,
@@ -155,7 +153,7 @@ client.on('messageCreate', async (message) => {
             );
         } catch (err) {
             console.error('Gagal membuat invite:', err);
-            return message.reply('❌ Gagal membuat link invite. Pastikan bot memiliki izin yang cukup di server!');
+            return message.reply('❌ Gagal membuat link invite. Pastikan bot memiliki izin Manage Server yang cukup!');
         }
     }
 
@@ -235,14 +233,13 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-// --- 3. DETEKSI AKTIVITAS VOICE CHANNEL (MASUK/KELUAR VC) ---
+// --- 3. DETEKSI AKTIVITAS VOICE CHANNEL ---
 client.on('voiceStateUpdate', (oldState, newState) => {
     const memberId = newState.member.id;
     const data = memberTracker.get(memberId);
 
     if (!data) return;
 
-    // Masuk VC
     if (!oldState.channelId && newState.channelId) {
         data.joinedVoice = true;
         data.vcJoinTimestamp = Date.now();
@@ -250,13 +247,12 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         console.log(`[VC JOIN] ${newState.member.user.tag} masuk VC`);
     }
 
-    // Keluar VC
     if (oldState.channelId && !newState.channelId) {
         if (data.vcJoinTimestamp) {
             const durationSeconds = Math.floor((Date.now() - data.vcJoinTimestamp) / 1000);
             data.totalVcTime += durationSeconds;
             data.vcJoinTimestamp = null;
-            console.log(`[VC LEAVE] ${newState.member.user.tag} keluar VC. Durasi sesi: ${durationSeconds} detik`);
+            console.log(`[VC LEAVE] ${newState.member.user.tag} keluar VC`);
         }
     }
 });
