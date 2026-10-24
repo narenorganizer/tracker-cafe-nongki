@@ -247,4 +247,6 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN).catch(err => {
+    console.error('❌GAGAL LOGIN KE DISCORD:', err);
+});
