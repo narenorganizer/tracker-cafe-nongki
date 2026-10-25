@@ -246,10 +246,11 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-// --- JALANKAN EXPRESS & LOGIN BOT BERSAMAAN ---
+// --- JALANKAN EXPRESS & LOGIN BOT ---
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server Express berjalan di port ${PORT}`);
     
+    // INI YANG WAJIB ADA SUPAYA BOT NYALA:
     client.login(process.env.DISCORD_TOKEN)
         .then(() => {
             console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD!`);
