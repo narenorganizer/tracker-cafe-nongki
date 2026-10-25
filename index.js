@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const express = require('express');
 
-// --- SETUP EXPRESS SERVER (Agar Render Uptime 24/7) ---
+// --- SETUP EXPRESS & CLIENT ---
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -9,11 +9,6 @@ app.get('/', (req, res) => {
     res.send('Bot Invite Contest Online & Ready!');
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server Express berjalan di port ${PORT}`);
-});
-
-// --- INITIALIZE DISCORD CLIENT ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
