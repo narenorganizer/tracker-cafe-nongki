@@ -2,14 +2,20 @@ console.log("=== SCRIPT INDEX.JS BERHASIL DI-LOAD NODE.JS ===");
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const express = require('express');
 
-// --- SETUP EXPRESS & CLIENT ---
+// --- SETUP EXPRESS & KEEP-ALIVE ---
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.get('/', (req, res) => {
-    res.send('Bot Invite Contest Online & Ready!');
+    res.send('Bot Invite Contest CAFE NONGKI Online!');
 });
 
+// Jalankan Express duluan supaya Render langsung mendeteksi port terbuka
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server Express berjalan di port ${PORT}`);
+});
+
+// --- SETUP DISCORD CLIENT ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -20,6 +26,15 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates
     ]
 });
+
+// --- LOGIN DISCORD TERPISAH (DIJAMIN JALAN) ---
+client.login(process.env.DISCORD_TOKEN)
+    .then(() => {
+        console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!`);
+    })
+    .catch(err => {
+        console.error('❌ ERROR LOGIN DISCORD:', err);
+    });
 
 // Data storage (In-Memory)
 const invitesCache = new Map();
