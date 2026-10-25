@@ -264,7 +264,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-// --- LOGIN DISCORD ---
+// --- JALANKAN LOGIN DISCORD ---
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
         console.log("✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!");
