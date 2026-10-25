@@ -10,7 +10,6 @@ app.get('/', (req, res) => {
     res.send('Bot Invite Contest CAFE NONGKI Online!');
 });
 
-// HANYA ADA 1 APP.LISTEN DI SINI
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server Express berjalan di port ${PORT}`);
 });
@@ -27,22 +26,12 @@ const client = new Client({
     ]
 });
 
-// --- LOGIN DISCORD ---
-client.login(process.env.DISCORD_TOKEN)
-    .then(() => {
-        console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!`);
-    })
-    .catch(err => {
-        console.error('❌ ERROR LOGIN DISCORD:', err);
-    });
-
-// --- KODE LAINNYA (invitesCache, event handler, dll) TARUH DI BAWAH SINI ---
-
-// Data storage (In-Memory)
+// --- DATA STORAGE (IN-MEMORY) ---
 const invitesCache = new Map();
 const memberTracker = new Map();
 const userStats = new Map();
 
+// --- HELPER FUNCTIONS ---
 function formatDuration(totalSeconds) {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -73,6 +62,7 @@ function checkAndValidate(memberId) {
     }
 }
 
+// --- DISCORD EVENT HANDLERS ---
 client.once('ready', async () => {
     console.log(`🤖 Bot Berhasil Login sebagai ${client.user.tag}`);
     
@@ -127,11 +117,9 @@ client.on('guildMemberRemove', (member) => {
     }
 });
 
-// --- EVENT PESAN MASUK & COMMAND HANDLER ---
 client.on('messageCreate', async (message) => {
     if (message.author.bot || !message.guild) return;
 
-    // Update statistik chat member untuk syarat validasi
     const data = memberTracker.get(message.author.id);
     if (data) {
         data.chatCount += 1;
@@ -264,7 +252,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-// --- JALANKAN LOGIN DISCORD ---
+// --- LOGIN DISCORD (HANYA 1 DI PALING BAWAH) ---
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
         console.log("✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!");
