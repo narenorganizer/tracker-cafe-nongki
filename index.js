@@ -1,3 +1,4 @@
+console.log("=== SCRIPT INDEX.JS BERHASIL DI-LOAD NODE.JS ===");
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const express = require('express');
 
