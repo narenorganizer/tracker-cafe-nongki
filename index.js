@@ -251,8 +251,15 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN).then(() => {
-    console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD!`);
-}).catch(err => {
-    console.error('❌ ERROR LOGIN:', err);
+// --- JALANKAN EXPRESS & LOGIN BOT BERSAMAAN ---
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server Express berjalan di port ${PORT}`);
+    
+    client.login(process.env.DISCORD_TOKEN)
+        .then(() => {
+            console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD!`);
+        })
+        .catch(err => {
+            console.error('❌ ERROR LOGIN DISCORD:', err);
+        });
 });
