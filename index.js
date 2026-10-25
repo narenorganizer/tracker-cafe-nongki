@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
     res.send('Bot Invite Contest CAFE NONGKI Online!');
 });
 
-// Jalankan Express duluan supaya Render langsung mendeteksi port terbuka
+// HANYA ADA 1 APP.LISTEN DI SINI
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server Express berjalan di port ${PORT}`);
 });
@@ -27,7 +27,7 @@ const client = new Client({
     ]
 });
 
-// --- LOGIN DISCORD TERPISAH (DIJAMIN JALAN) ---
+// --- LOGIN DISCORD ---
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
         console.log(`✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!`);
@@ -35,6 +35,8 @@ client.login(process.env.DISCORD_TOKEN)
     .catch(err => {
         console.error('❌ ERROR LOGIN DISCORD:', err);
     });
+
+// --- KODE LAINNYA (invitesCache, event handler, dll) TARUH DI BAWAH SINI ---
 
 // Data storage (In-Memory)
 const invitesCache = new Map();
