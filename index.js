@@ -252,11 +252,11 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     }
 });
 
-// --- LOGIN DISCORD (HANYA 1 DI PALING BAWAH) ---
+// --- JALANKAN LOGIN DISCORD ---
 client.login(process.env.DISCORD_TOKEN)
     .then(() => {
         console.log("✅ LOGIN BERHASIL DISETUJUI DISCORD! BOT SIAP TEMPUR!");
     })
     .catch(err => {
-        console.error("❌ ERROR LOGIN DISCORD:", err);
+        console.error("❌ GAGAL LOGIN DISCORD! ERROR DETAIL:", err.message);
     });
